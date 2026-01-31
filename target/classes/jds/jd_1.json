@@ -1,0 +1,10 @@
+{
+    "job_id": "lyzr-bengaluru-backend-engineer",
+    "role_type": "backend",
+    "seniority": "junior",
+    "required_experience_years": 1,
+    "required_skills": ["backend development", "REST APIs", "microservices", "scalable cloud infrastructure", "GenAI applications", "LLM-powered products", "vector databases", "RAG pipelines"],
+    "programming_languages": ["Python"],
+    "nice_to_have_skills": ["AI-powered SaaS products", "open-source GenAI projects", "prompt engineering", "agent orchestration frameworks", "AWS", "GCP", "Azure", "Docker", "Kubernetes"],
+    "domain": "GenAI applications and platforms"
+}

@@ -1,0 +1,6 @@
+{
+  "jobId": "job_1",
+  "roleType": "backend",
+  "requiredSkills": ["java", "rest"],
+  "niceToHaveSkills": ["docker"]
+}

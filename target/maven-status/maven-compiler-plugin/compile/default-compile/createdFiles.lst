@@ -1,0 +1,8 @@
+com\jobintelligence\service\JobScorer.class
+com\jobintelligence\service\GapExplanationService.class
+com\jobintelligence\model\DecisionType.class
+com\jobintelligence\model\JobMatchResult.class
+com\jobintelligence\model\JobProfile.class
+com\jobintelligence\Main.class
+com\jobintelligence\service\ActionPlanService.class
+com\jobintelligence\model\ResumeProfile.class
