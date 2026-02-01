@@ -125,9 +125,9 @@ src/main/java/com/jobintelligence/
 src/main/resources/
  ├── resume.json
  └── jds
-   ├── jd_1.json
-   ├── jd_2.json
-   └── jd_3.json
+     ├── jd_1.json
+     ├── jd_2.json
+     └── jd_3.json
 ```
 
 ---
