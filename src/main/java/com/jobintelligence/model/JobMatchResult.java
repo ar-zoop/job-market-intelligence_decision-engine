@@ -45,6 +45,38 @@ public class JobMatchResult {
         return matchedNiceToHaveSkills;
     }
 
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
+    public void setFitScore(double fitScore) {
+        this.fitScore = fitScore;
+    }
+
+    public void setRecommendation(DecisionType recommendation) {
+        this.recommendation = recommendation;
+    }
+
+    public void setMissingRequiredSkills(List<String> missingRequiredSkills) {
+        this.missingRequiredSkills = missingRequiredSkills;
+    }
+
+    public void setMissingNiceToHaveSkills(List<String> missingNiceToHaveSkills) {
+        this.missingNiceToHaveSkills = missingNiceToHaveSkills;
+    }
+
+    public void setMatchedRequiredSkills(List<String> matchedRequiredSkills) {
+        this.matchedRequiredSkills = matchedRequiredSkills;
+    }
+
+    public void setMatchedNiceToHaveSkills(List<String> matchedNiceToHaveSkills) {
+        this.matchedNiceToHaveSkills = matchedNiceToHaveSkills;
+    }
+
+    public void setRoleAlignmentExplanation(String roleAlignmentExplanation) {
+        this.roleAlignmentExplanation = roleAlignmentExplanation;
+    }
+
     public String getRoleAlignmentExplanation() {
         return roleAlignmentExplanation;
     }

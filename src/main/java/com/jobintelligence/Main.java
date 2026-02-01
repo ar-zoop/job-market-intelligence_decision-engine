@@ -1,17 +1,21 @@
 package com.jobintelligence;
 
 import com.jobintelligence.model.*;
+import com.jobintelligence.service.ActionPlanService;
 import com.jobintelligence.service.GapExplanationService;
 import com.jobintelligence.service.JobScorer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     public static void main (String[] args) {
         try{
+            List<JobMatchResult> jobMatchResultList = new ArrayList<>();
             ObjectMapper mapper = new ObjectMapper();
 
             // Load resume.json from resources
@@ -33,6 +37,11 @@ public class Main {
             GapExplanationService gapExplanationService = new GapExplanationService();
             gapExplanationService.enrichJobMatchResult(result, resume, job);
             gapExplanationService.printExplanation(result);
+
+            jobMatchResultList.add(result);
+
+            ActionPlanService actionPlanService = new ActionPlanService();
+            actionPlanService.execute(jobMatchResultList);
 
         } catch (Exception e) {
             e.printStackTrace();

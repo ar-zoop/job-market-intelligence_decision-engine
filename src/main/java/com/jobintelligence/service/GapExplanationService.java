@@ -53,10 +53,10 @@ public class GapExplanationService {
     }
 
     public void enrichJobMatchResult(JobMatchResult jobMatchResult, ResumeProfile resume, JobProfile job) {
-        jobMatchResult.matchedRequiredSkills = calculateSkillMatchList(resume.skills, job.requiredSkills);
-        jobMatchResult.matchedNiceToHaveSkills = calculateSkillMatchList(resume.skills, job.niceToHaveSkills);
-        jobMatchResult.missingRequiredSkills = calculateSkillMissList(resume.skills, job.requiredSkills);
-        jobMatchResult.missingNiceToHaveSkills = calculateSkillMissList(resume.skills, job.niceToHaveSkills);
-        jobMatchResult.roleAlignmentExplanation = roleAlignmentExplanation(resume, job);
+        jobMatchResult.setMatchedRequiredSkills(calculateSkillMatchList(resume.skills, job.requiredSkills));
+        jobMatchResult.setMatchedNiceToHaveSkills(calculateSkillMatchList(resume.skills, job.niceToHaveSkills));
+        jobMatchResult.setMissingRequiredSkills(calculateSkillMissList(resume.skills, job.requiredSkills));
+        jobMatchResult.setMissingNiceToHaveSkills(calculateSkillMissList(resume.skills, job.niceToHaveSkills));
+        jobMatchResult.setRoleAlignmentExplanation(roleAlignmentExplanation(resume, job));
     }
 }
