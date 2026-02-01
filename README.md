@@ -119,11 +119,15 @@ src/main/java/com/jobintelligence/
  │   └── JobMatchResult.java
  └── service/
      ├── JobScorer.java
-     └── GapExplanationService.java
+     ├── GapExplanationService.java
+     └── ActionPlanService.java
 
 src/main/resources/
  ├── resume.json
- └── job.json
+ └── jds
+   ├── jd_1.json
+   ├── jd_2.json
+   └── jd_3.json
 ```
 
 ---
