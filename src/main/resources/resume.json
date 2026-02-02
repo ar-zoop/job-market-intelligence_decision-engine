@@ -1,4 +1,5 @@
 {
   "skills": ["java", "spring", "sql"],
-  "primaryRole": "backend"
+  "primaryRole": "backend",
+  "yearsOfExperience": 2
 }

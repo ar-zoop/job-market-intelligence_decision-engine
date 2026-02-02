@@ -25,20 +25,22 @@ public class Main {
                 mapper.readValue(resumeStream, ResumeProfile.class);
 
             // Load job.json from resources
-            InputStream jobStream =
-                Main.class.getClassLoader().getResourceAsStream("jds/jd_3.json");
-            JobProfile job =
-                mapper.readValue(jobStream, JobProfile.class);
+            for (int i = 0 ; i < 3; i++) {
+                String job_filename = String.format("jds/jd_%d.json", i+1);
+                InputStream jobStream =
+                    Main.class.getClassLoader().getResourceAsStream(job_filename);
+                JobProfile job =
+                    mapper.readValue(jobStream, JobProfile.class);
 
-            // Score
-            JobScorer jobScorerReport = new JobScorer();
-            JobMatchResult result = jobScorerReport.score(resume, job);
+                JobScorer jobScorerReport = new JobScorer();
+                JobMatchResult result = jobScorerReport.score(resume, job);
 
-            GapExplanationService gapExplanationService = new GapExplanationService();
-            gapExplanationService.enrichJobMatchResult(result, resume, job);
-            gapExplanationService.printExplanation(result);
+                GapExplanationService gapExplanationService = new GapExplanationService();
+                gapExplanationService.enrichJobMatchResult(result, resume, job);
+                gapExplanationService.printExplanation(result);
 
-            jobMatchResultList.add(result);
+                jobMatchResultList.add(result);
+            }
 
             ActionPlanService actionPlanService = new ActionPlanService();
             actionPlanService.execute(jobMatchResultList);

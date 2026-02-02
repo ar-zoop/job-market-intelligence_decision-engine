@@ -22,10 +22,33 @@ public class JobScorer {
         double requiredMatchRatio = calculateSkillMatchRatio(resume.skills, job.requiredSkills);
         double optionalMatchRatio = calculateSkillMatchRatio(resume.skills, job.niceToHaveSkills);
         double roleAlignment = calculateRoleAlignment(resume.primaryRole, job.roleType);
-        double fitScore = 0;
-      
-        fitScore = (requiredMatchRatio * 60) + (optionalMatchRatio * 20) + (roleAlignment * 20);
+        double experienceAlignment = calculateExperienceAlignment(resume.yearsOfExperience, job.yearsOfExperience);
+
+        // Weights: required skills 55%, optional 15%, role 15%, experience 15%
+        double fitScore = (requiredMatchRatio * 55) + (optionalMatchRatio * 15) + (roleAlignment * 15) + (experienceAlignment * 15);
         return fitScore * maxScore / 100;
+    }
+
+    /**
+     * Experience alignment: 1.0 if candidate meets or exceeds required years;
+     * partial credit if within 1–2 years; low score if far short.
+     * If job does not specify required years (0), treat as no requirement → full score.
+     */
+    double calculateExperienceAlignment(int candidateYears, int requiredYears) {
+        if (requiredYears <= 0) {
+            return 1.0;
+        }
+        if (candidateYears >= requiredYears) {
+            return 1.0;
+        }
+        int shortfall = requiredYears - candidateYears;
+        if (shortfall == 1) {
+            return 0.75;
+        }
+        if (shortfall == 2) {
+            return 0.5;
+        }
+        return 0.25; // 3+ years short
     }
 
     DecisionType calculateDecisionLabel(double fitScore) {

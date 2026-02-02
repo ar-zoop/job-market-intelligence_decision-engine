@@ -40,23 +40,39 @@ public class GapExplanationService {
         }
     }
 
+    private String experienceMatchExplanation(ResumeProfile resume, JobProfile job) {
+        if (job.yearsOfExperience <= 0) {
+            return "Job does not specify required experience.";
+        }
+        int candidate = resume.yearsOfExperience;
+        int required = job.yearsOfExperience;
+        if (candidate >= required) {
+            return String.format("Experience met. You have %d years; job requires %d.", candidate, required);
+        }
+        int shortfall = required - candidate;
+        return String.format("Experience gap. You have %d years; job requires %d (%d year(s) short).", candidate, required, shortfall);
+    }
+
     public void printExplanation(JobMatchResult jobMatchResult) {
         System.out.println("job id : " + jobMatchResult.getJobId());
         System.out.println("fit score : " + jobMatchResult.getFitScore());
         System.out.println("recommendation : " + jobMatchResult.getRecommendation());
         System.out.println("Role type alignment : " + jobMatchResult.getRoleAlignmentExplanation());
+        System.out.println("Experience : " + jobMatchResult.getExperienceMatchExplanation());
         System.out.println("matched required skills : " + jobMatchResult.getMatchedRequiredSkills());
         System.out.println("matched nice to have skills : " + jobMatchResult.getMatchedNiceToHaveSkills());
-        System.out.println("missing required skills : " + jobMatchResult.getMissingNiceToHaveSkills());
-        System.out.println("missing nice to have skills : " + jobMatchResult.getMissingRequiredSkills());
+        System.out.println("missing required skills : " + jobMatchResult.getMissingRequiredSkills());
+        System.out.println("missing nice to have skills : " + jobMatchResult.getMissingNiceToHaveSkills());
 
     }
 
     public void enrichJobMatchResult(JobMatchResult jobMatchResult, ResumeProfile resume, JobProfile job) {
+        jobMatchResult.setJobId(job.jobId);
         jobMatchResult.setMatchedRequiredSkills(calculateSkillMatchList(resume.skills, job.requiredSkills));
         jobMatchResult.setMatchedNiceToHaveSkills(calculateSkillMatchList(resume.skills, job.niceToHaveSkills));
         jobMatchResult.setMissingRequiredSkills(calculateSkillMissList(resume.skills, job.requiredSkills));
         jobMatchResult.setMissingNiceToHaveSkills(calculateSkillMissList(resume.skills, job.niceToHaveSkills));
         jobMatchResult.setRoleAlignmentExplanation(roleAlignmentExplanation(resume, job));
+        jobMatchResult.setExperienceMatchExplanation(experienceMatchExplanation(resume, job));
     }
 }

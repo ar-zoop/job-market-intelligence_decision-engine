@@ -11,6 +11,7 @@ public class JobMatchResult {
     public List<String> matchedRequiredSkills;
     public List<String> matchedNiceToHaveSkills;
     public String roleAlignmentExplanation;
+    public String experienceMatchExplanation;
 
     public JobMatchResult(double fitScore, DecisionType recommendation) {
         this.fitScore = fitScore;
@@ -79,6 +80,14 @@ public class JobMatchResult {
 
     public String getRoleAlignmentExplanation() {
         return roleAlignmentExplanation;
+    }
+
+    public void setExperienceMatchExplanation(String experienceMatchExplanation) {
+        this.experienceMatchExplanation = experienceMatchExplanation;
+    }
+
+    public String getExperienceMatchExplanation() {
+        return experienceMatchExplanation;
     }
 }
 
