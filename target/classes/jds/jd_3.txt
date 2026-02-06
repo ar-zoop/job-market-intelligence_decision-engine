@@ -1,0 +1,9 @@
+Job ID: job_1
+Role Type: backend
+
+Required Skills:
+- java
+- rest
+
+Nice to Have Skills:
+- docker

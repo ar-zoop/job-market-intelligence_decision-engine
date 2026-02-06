@@ -13,6 +13,10 @@ public class JobMatchResult {
     public String roleAlignmentExplanation;
     public String experienceMatchExplanation;
 
+    public JobMatchResult(){
+
+    }
+
     public JobMatchResult(double fitScore, DecisionType recommendation) {
         this.fitScore = fitScore;
         this.recommendation = recommendation;

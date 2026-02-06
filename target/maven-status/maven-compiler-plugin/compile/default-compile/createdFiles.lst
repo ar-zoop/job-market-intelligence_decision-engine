@@ -1,4 +1,5 @@
 com\jobintelligence\service\JobScorer.class
+com\jobintelligence\service\PythonInterpretationService.class
 com\jobintelligence\service\GapExplanationService.class
 com\jobintelligence\model\DecisionType.class
 com\jobintelligence\Main.class

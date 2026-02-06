@@ -1,53 +1,93 @@
 package com.jobintelligence;
 
 import com.jobintelligence.model.*;
-import com.jobintelligence.service.ActionPlanService;
-import com.jobintelligence.service.GapExplanationService;
-import com.jobintelligence.service.JobScorer;
+import com.jobintelligence.service.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
 
-    public static void main (String[] args) {
-        try{
-            List<JobMatchResult> jobMatchResultList = new ArrayList<>();
+    public static void main(String[] args) {
+        try {
             ObjectMapper mapper = new ObjectMapper();
+            PythonInterpretationService pythonService = new PythonInterpretationService();
+            List<JobMatchResult> jobMatchResults = new ArrayList<>();
 
-            // Load resume.json from resources
+            //Resume
             InputStream resumeStream =
-                Main.class.getClassLoader().getResourceAsStream("resume.json");
-            ResumeProfile resume =
-                mapper.readValue(resumeStream, ResumeProfile.class);
+                Main.class.getClassLoader().getResourceAsStream("resume.txt");
 
-            // Load job.json from resources
-            for (int i = 0 ; i < 3; i++) {
-                String job_filename = String.format("jds/jd_%d.json", i+1);
-                InputStream jobStream =
-                    Main.class.getClassLoader().getResourceAsStream(job_filename);
-                JobProfile job =
-                    mapper.readValue(jobStream, JobProfile.class);
-
-                JobScorer jobScorerReport = new JobScorer();
-                JobMatchResult result = jobScorerReport.score(resume, job);
-
-                GapExplanationService gapExplanationService = new GapExplanationService();
-                gapExplanationService.enrichJobMatchResult(result, resume, job);
-                gapExplanationService.printExplanation(result);
-
-                jobMatchResultList.add(result);
+            if (resumeStream == null) {
+                throw new RuntimeException("resume.txt not found in resources");
             }
 
+            String resumeText = new String(
+                resumeStream.readAllBytes(),
+                StandardCharsets.UTF_8
+            );
+
+            Optional<String> resumeJsonOpt =
+                pythonService.interpretResumeText(resumeText);
+
+            if (resumeJsonOpt.isEmpty()) {
+                throw new RuntimeException("Python resume interpretation failed");
+            }
+
+            ResumeProfile resume =
+                mapper.readValue(resumeJsonOpt.get(), ResumeProfile.class);
+
+            // Job Loop
+            for (int i = 0; i < 3; i++) {
+
+                String filename = String.format("jds/jd_%d.txt", i);
+
+                InputStream jobStream =
+                    Main.class.getClassLoader().getResourceAsStream(filename);
+
+                if (jobStream == null) {
+                    System.out.println(filename + " not found. Skipping.");
+                    continue;
+                }
+
+                String jobText = new String(
+                    jobStream.readAllBytes(),
+                    StandardCharsets.UTF_8
+                );
+
+                Optional<String> jobJsonOpt =
+                    pythonService.interpretJobText(jobText);
+
+                if (jobJsonOpt.isEmpty()) {
+                    System.out.println("Python job interpretation failed. Skipping job.");
+                    continue;
+                }
+
+                JobProfile job =
+                    mapper.readValue(jobJsonOpt.get(), JobProfile.class);
+
+                // Scoring
+                JobScorer jobScorer = new JobScorer();
+                JobMatchResult result = jobScorer.score(resume, job);
+
+                GapExplanationService gapService = new GapExplanationService();
+                gapService.enrichJobMatchResult(result, resume, job);
+                gapService.printExplanation(result);
+
+                jobMatchResults.add(result);
+            }
+
+            // Action Plan
             ActionPlanService actionPlanService = new ActionPlanService();
-            actionPlanService.execute(jobMatchResultList);
+            actionPlanService.execute(jobMatchResults);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
-
