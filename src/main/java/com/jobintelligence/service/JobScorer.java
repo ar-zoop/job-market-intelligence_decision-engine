@@ -61,24 +61,23 @@ public class JobScorer {
         }
     }
 
-    double calculateRoleAlignment(String candidatesRole, String jobRole) {
-        if(jobRole.equals(candidatesRole)) {
+    double calculateRoleAlignment(String candidateRole, String jobRole) {
+        if (jobRole.equals(candidateRole)) {
             return 1.0;
-        } else {
-            return 0.6;
         }
+        return 0.6;
     }
 
-    double calculateSkillMatchRatio(List<String> candidatesSkills, List<String> jobSkills) {
-        if(jobSkills.size() == 0) {
+    double calculateSkillMatchRatio(List<String> candidateSkills, List<String> jobSkills) {
+        if (jobSkills.isEmpty()) {
             return 0.0;
         }
-        int skillMatch = 0;
+        int matchedSkillCount = 0;
         for (String skill : jobSkills) {
-            if(candidatesSkills.contains(skill)) {
-                skillMatch++;
+            if (candidateSkills.contains(skill)) {
+                matchedSkillCount++;
             }
         }
-        return (double) skillMatch / jobSkills.size();
+        return (double) matchedSkillCount / jobSkills.size();
     }
 }

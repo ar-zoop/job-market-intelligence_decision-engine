@@ -12,28 +12,28 @@ public class GapExplanationService {
 
     }
 
-    private List<String> calculateSkillMatchList(List<String> candidatesSkills, List<String> jobSkills) {
-        List<String> skillMatch = new ArrayList<>();
+    private List<String> calculateSkillMatchList(List<String> candidateSkills, List<String> jobSkills) {
+        List<String> matchedSkills = new ArrayList<>();
         for (String skill : jobSkills) {
-            if(candidatesSkills.contains(skill)) {
-                skillMatch.add(skill);
+            if (candidateSkills.contains(skill)) {
+                matchedSkills.add(skill);
             }
         }
-        return skillMatch;
+        return matchedSkills;
     }
 
-    private List<String> calculateSkillMissList(List<String> candidatesSkills, List<String> jobSkills) {
-        List<String> skillMiss = new ArrayList<>();
+    private List<String> calculateSkillMissList(List<String> candidateSkills, List<String> jobSkills) {
+        List<String> missingSkills = new ArrayList<>();
         for (String skill : jobSkills) {
-            if(!candidatesSkills.contains(skill)) {
-                skillMiss.add(skill);
+            if (!candidateSkills.contains(skill)) {
+                missingSkills.add(skill);
             }
         }
-        return skillMiss;
+        return missingSkills;
     }
 
     private String roleAlignmentExplanation(ResumeProfile resume, JobProfile job) {
-        if(resume.primaryRole.equals(job.roleType)) {
+        if (resume.primaryRole.equals(job.roleType)) {
             return "Exact match. Job role : " + job.roleType + " and Resume role : " + resume.primaryRole;
         } else {
             return "Did not match. Job role : " + job.roleType + " and Resume role : " + resume.primaryRole;

@@ -32,18 +32,22 @@ public class Main {
                 StandardCharsets.UTF_8
             );
 
+            if (resumeText.isEmpty()) {
+                throw new RuntimeException("Empty resume. Invalid argument.");
+            }
+
             Optional<String> resumeJsonOpt =
                 pythonService.interpretResumeText(resumeText);
-
-            if (resumeJsonOpt.isEmpty()) {
-                throw new RuntimeException("Python resume interpretation failed");
+            ResumeProfile resume = new ResumeProfile();
+            if (resumeJsonOpt.isPresent()) {
+                 resume = mapper.readValue(resumeJsonOpt.get(), ResumeProfile.class);
+            } else {
+                System.out.println("Resume interpretation empty. Attempting to convert raw resume text to ResumeProfile.");
+                resume = mapper.readValue(resumeText, ResumeProfile.class);
             }
-            System.out.println("resume : " + resumeJsonOpt.get());
-            ResumeProfile resume =
-                mapper.readValue(resumeJsonOpt.get(), ResumeProfile.class);
 
             // Job Loop
-            for (int i = 1; i <= 3; i++) {
+            for (int i = 1; i <= 4; i++) {
 
                 String filename = String.format("jds/jd_%d.txt", i);
 
