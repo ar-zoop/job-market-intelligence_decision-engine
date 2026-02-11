@@ -1,205 +1,110 @@
-# Job Market Intelligence - Decision Engine (Java)
+# Job Market Intelligence – Decision Engine
 
-Deterministic backend engine for analyzing job descriptions against a candidate’s resume and generating **fit scores, gap explanations, and action insights**.
+## What Is This?
 
-This project focuses on **decision logic and explainability**, not prompt engineering.
-LLMs are used upstream for normalization, while this engine performs **structured, rule-based evaluation**.
+**Problem:** Most job-matching tools are prompt-only and opaque; scores and decisions aren’t reproducible or explainable.
 
----
+**Solution:** A deterministic Java engine that scores resume–job fit, labels decisions (APPLY_NOW / PREPARE_THEN_APPLY / SKIP), and explains skill gaps and role alignment. Raw text is first normalized by a separate Python (LLM) service; this repo does the **hybrid AI + deterministic backend**—interpretation upstream, decisions here.
 
-## What This Project Does
-
-Given:
-
-* A normalized **Resume Profile** (skills + primary role)
-* One or more normalized **Job Profiles**
-
-The engine will:
-
-1. **Compute a Fit Score (0–100)** using weighted logic
-2. **Label Job Decisions**
-
-    * `APPLY_NOW`
-    * `PREPARE_THEN_APPLY`
-    * `SKIP`
-3. **Explain Skill Gaps**
-
-    * Matched required skills
-    * Missing required skills
-    * Matched optional skills
-    * Missing optional skills
-4. **Explain Role Alignment**
-
-    * Exact match vs mismatch
-
-All outputs are **deterministic and reproducible**.
+**Who it’s for:** Engineers and product people who want reproducible, explainable job-fit logic; teams building job-matching or career tools with a clear split between AI interpretation and rule-based scoring.
 
 ---
 
-## Why This Exists
-
-Most AI job tools rely purely on prompts.
-This engine demonstrates:
-
-* Backend system design
-* Deterministic decision making
-* Explainable AI principles
-* Clean separation between **interpretation** and **decision logic**
-
----
-
-## Architecture Overview
+## Architecture
 
 ```
-Resume JSON + Job JSON
-        ↓
-   JobScorer
-        ↓
- GapExplanationService
-        ↓
-   JobMatchResult
-        ↓
-   Console / API / UI (future)
+  resume.txt + jds/jd_*.txt
+           │
+           ▼
+  ┌─────────────────────────┐
+  │  Python service         │  (localhost:8000)
+  │  /analyze-resume        │
+  │  /analyze-job           │  → normalized JSON
+  └───────────┬─────────────┘
+              │
+              ▼
+  ┌─────────────────────────┐
+  │  Java (this repo)       │
+  │  JobScorer              │  → fit score + decision
+  │  GapExplanationService  │  → matched/missing skills, role
+  │  ActionPlanService      │  → prioritised actions
+  └───────────┬─────────────┘
+              │
+              ▼
+  JobMatchResult → console (and future API/UI)
 ```
 
-### Layers
+---
 
-| Layer                     | Responsibility                                             |
-| ------------------------- | ---------------------------------------------------------- |
-| **JobScorer**             | Numerical fit score + decision label                       |
-| **GapExplanationService** | Matched/missing skills + role explanation                  |
-| **Main**                  | Orchestration and console output                           |
-| **Models**                | Data contracts (ResumeProfile, JobProfile, JobMatchResult) |
+## Tech Stack
+
+- **Java 21**, Maven
+- **Jackson** (JSON)
+- **Java 11+ HTTP client** (calls Python service)
+- **Python companion** (separate repo): LLM-based resume/job normalizer
 
 ---
 
-## Scoring Logic
+## How to Run
 
-### Weights
+**1. Start the Python service** (https://github.com/ar-zoop/job-market-intelligence_ai-implementation; must be running on `http://localhost:8000`):
 
-* Required Skills Match → **60%**
-* Optional Skills Match → **20%**
-* Role Alignment → **20%**
+```bash
+# In job-market-intelligence_ai-implementation (or your Python normalizer repo)
+# pip install -r requirements.txt
+# python app.py
+```
 
-### Decision Thresholds
+**2. Run the Java main:**
 
-| Score | Decision           |
-| ----- | ------------------ |
-| ≥ 70  | APPLY_NOW          |
-| 50–69 | PREPARE_THEN_APPLY |
-| < 50  | SKIP               |
+```bash
+mvn clean compile
+mvn exec:java -Dexec.mainClass="com.jobintelligence.Main"
+```
+
+**3. Folder structure (inputs):**
+
+```
+src/main/resources/
+  resume.txt          ← your resume text (plain)
+  jds/
+    jd_1.txt
+    jd_2.txt
+    jd_3.txt
+    jd_4.txt          ← job description texts (plain)
+```
+
+Put your resume content in `resume.txt` and one JD per file in `jds/`. The engine reads these, sends them to the Python service for normalization, then scores and explains.
 
 ---
 
-## Example Output
+## Sample Input / Output
+
+**Resume text sample** (`resume.txt`):
+
+```
+Arzoo Bapna. CS graduate. Skilled in Java, Spring Boot, Vert.x, REST APIs,
+MySQL, PostgreSQL, Redis, Kafka, Docker, Git. Software Engineer at American Express.
+Backend microservices, Java, Vert.x, Redis, Kafka, Docker, SQL/NoSQL, REST APIs.
+```
+
+**Job text sample** (`jds/jd_1.txt`):
+
+```
+Backend Engineer. Required: Java, REST, SQL. Nice to have: Docker, Kafka.
+```
+
+**Example output (trimmed):**
 
 ```
 Job: backend_engineer_1
-Fit Score: 50
-Decision: PREPARE_THEN_APPLY
+Fit Score: 72
+Decision: APPLY_NOW
 
-Matched Required Skills: [java]
-Missing Required Skills: [rest]
-Matched Optional Skills: []
-Missing Optional Skills: [docker]
+Matched Required Skills: [java, rest, sql]
+Missing Required Skills: []
+Matched Optional Skills: [docker, kafka]
+Missing Optional Skills: []
 
 Role Alignment: Exact match. Job role: backend, Resume role: backend
 ```
-
----
-
-## Project Structure
-
-```
-src/main/java/com/jobintelligence/
- ├── Main.java
- ├── model/
- │   ├── ResumeProfile.java
- │   ├── JobProfile.java
- │   └── JobMatchResult.java
- └── service/
-     ├── JobScorer.java
-     ├── GapExplanationService.java
-     └── ActionPlanService.java
-
-src/main/resources/
- ├── resume.json
- └── jds
-     ├── jd_1.json
-     ├── jd_2.json
-     └── jd_3.json
-```
-
----
-
-## Running the Project
-
-### Requirements
-
-* Java 21+
-* Maven 3.9+
-
-### Commands
-
-```
-mvn clean compile
-mvn exec:java
-```
-
----
-
-## Input Format
-
-### resume.json
-
-```json
-{
-  "skills": ["java", "spring", "sql"],
-  "primaryRole": "backend"
-}
-```
-
-### jds/job.json
-
-```json
-{
-  "jobId": "job_1",
-  "roleType": "backend",
-  "requiredSkills": ["java", "rest"],
-  "niceToHaveSkills": ["docker"]
-}
-```
-
----
-
-## Design Principles
-
-* **Deterministic over probabilistic**
-* **Explainable over opaque**
-* **Separation of concerns**
-* **Stateless services**
-* **Human-readable outputs**
-
----
-
-## Future Enhancements
-
-* Multi-job aggregation and skill prioritization
-* Adjacent role alignment tiers
-* REST API layer (Spring Boot)
-* UI dashboard
-* Optional LLM-generated narrative summaries
-
----
-
-## Companion Project
-
-This engine is designed to work alongside a Python-based **Job Description Normalizer** that converts raw JDs into structured JSON using LLMs.
-
-https://github.com/ar-zoop/job-market-intelligence_ai-implementation/tree/main
-
-* Python → Interpretation
-* Java → Decisions
-
----
-
