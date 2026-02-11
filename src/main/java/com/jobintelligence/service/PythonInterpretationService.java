@@ -45,7 +45,8 @@ public class PythonInterpretationService {
     public Optional<String> interpretResumeText(String resumeText) {
         try {
             Map<String, Object> body = new HashMap<>();
-            body.put("resume_text", resumeText);
+            body.put("resume", resumeText);
+            body.put("save", true);
             String jsonBody = objectMapper.writeValueAsString(body);
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -86,6 +87,7 @@ public class PythonInterpretationService {
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("job_description", jobText);
+            body.put("save", true);
             String jsonBody = objectMapper.writeValueAsString(body);
 
             HttpRequest request = HttpRequest.newBuilder()

@@ -38,12 +38,12 @@ public class Main {
             if (resumeJsonOpt.isEmpty()) {
                 throw new RuntimeException("Python resume interpretation failed");
             }
-
+            System.out.println("resume : " + resumeJsonOpt.get());
             ResumeProfile resume =
                 mapper.readValue(resumeJsonOpt.get(), ResumeProfile.class);
 
             // Job Loop
-            for (int i = 0; i < 3; i++) {
+            for (int i = 1; i <= 3; i++) {
 
                 String filename = String.format("jds/jd_%d.txt", i);
 
