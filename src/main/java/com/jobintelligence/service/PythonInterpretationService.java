@@ -21,12 +21,19 @@ import java.util.Optional;
 public class PythonInterpretationService {
 
     private static final String DEFAULT_BASE_URL = "http://localhost:8000";
+    private static final String ENV_PYTHON_SERVICE_URL = "PYTHON_SERVICE_URL";
+
     private final String baseUrl;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
     public PythonInterpretationService() {
-        this(DEFAULT_BASE_URL);
+        this(resolveBaseUrl());
+    }
+
+    private static String resolveBaseUrl() {
+        String env = System.getenv(ENV_PYTHON_SERVICE_URL);
+        return (env != null && !env.isBlank()) ? env.trim() : DEFAULT_BASE_URL;
     }
 
     public PythonInterpretationService(String baseUrl) {

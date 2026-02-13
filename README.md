@@ -46,20 +46,9 @@
 ---
 
 ## How to Run
-
-**1. Start the Python service** (https://github.com/ar-zoop/job-market-intelligence_ai-implementation; must be running on `http://localhost:8000`):
-
-```bash
-# In job-market-intelligence_ai-implementation (or your Python normalizer repo)
-# pip install -r requirements.txt
-# python app.py
 ```
-
-**2. Run the Java main:**
-
-```bash
-mvn clean compile
-mvn exec:java -Dexec.mainClass="com.jobintelligence.Main"
+# Run with Docker
+docker compose up
 ```
 
 **3. Folder structure (inputs):**

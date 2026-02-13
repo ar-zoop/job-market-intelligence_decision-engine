@@ -1,0 +1,21 @@
+services:
+  python-app:
+    build:
+      context: ../job-market-intelligence
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  java-app:
+    build: .
+    depends_on:
+      python-app:
+        condition: service_healthy
+    environment:
+      PYTHON_SERVICE_URL: http://python-app:8000
+    command: ["sh", "-c", "java -jar /app/app.jar"]
